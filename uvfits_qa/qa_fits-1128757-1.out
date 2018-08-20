@@ -1,0 +1,59 @@
+
+Inactive Modules:
+  1) astropy/2.0.3-python-2.7.14        8) numpy/1.14.1-python-2.7.14
+  2) cfitsio/3.420                      9) openmpi/3.0.0
+  3) fftw/3.3.7                        10) python/2.7.14
+  4) h5py/2.7.1-python-2.7.14          11) scalapack/2.0.2-openblas-0.2.20
+  5) hdf5/1.10.1                       12) scipy/1.0.0-python-2.7.14
+  6) matplotlib/2.2.2-python-2.7.14    13) sqlite/3.21.0
+  7) mpi4py/3.0.0-python-2.7.14
+
+Due to MODULEPATH changes, the following have been reloaded:
+  1) openblas/0.2.20
+
+
+Activating Modules:
+  1) fftw/3.3.7      3) openmpi/3.0.0
+  2) hdf5/1.10.1     4) scalapack/2.0.2-openblas-0.2.20
+
+Due to MODULEPATH changes, the following have been reloaded:
+  1) openblas/0.2.20
+
+The following have been reloaded with a version change:
+  1) gcccore/6.4.0 => gcccore/5.5.0
+
+
+Activating Modules:
+  1) astropy/2.0.3-python-2.7.14        6) numpy/1.14.1-python-2.7.14
+  2) cfitsio/3.420                      7) python/2.7.14
+  3) h5py/2.7.1-python-2.7.14           8) scipy/1.0.0-python-2.7.14
+  4) matplotlib/2.2.2-python-2.7.14     9) sqlite/3.21.0
+  5) mpi4py/3.0.0-python-2.7.14
+
+Due to MODULEPATH changes, the following have been reloaded:
+  1) fftw/3.3.7      3) openblas/0.2.20     5) scalapack/2.0.2-openblas-0.2.20
+  2) hdf5/1.10.1     4) openmpi/3.0.0
+
+The following have been reloaded with a version change:
+  1) gcc/5.5.0 => gcc/6.4.0     2) gcccore/5.5.0 => gcccore/6.4.0
+
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_20.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_19.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_18.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_17.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_16.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_15.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_14.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_13.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_12.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_11.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_10.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_09.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_08.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_07.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_06.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_05.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_04.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_03.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_02.uvfits
+/fred/oz048/MWA/data/1125953008/EOR1_2015_baseline/uvdump_01.uvfits
