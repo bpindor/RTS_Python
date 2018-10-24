@@ -229,7 +229,10 @@ class rts_cal():
             
         return bp_jones_amps
 
-    def all_single_jones(self,antenna=0,reverse_bands=False,correct_gain_jump=True,conjugate_jones=True,pol='xx',cent_chan=12):
+    def single_jones_amps(self,antenna=0):
+        
+
+    def all_single_jones(self,antenna=0,reverse_bands=False,correct_gain_jump=True,conjugate_jones=True,pol='xx',cent_chan=12,return_amps=False):
         all_single_jones = [[[],[]],[[],[]]]
 #        all_single_xx = []
 #        all_single_yy = []
@@ -284,11 +287,17 @@ class rts_cal():
                       for chan in a.Single_jones[b]:  
                           #all_single_xx.append(chan[0,0])
                           #all_single_yy.append(chan[1,1])
-                          all_single_jones[0][0].append(chan[0,0])
-                          all_single_jones[0][1].append(chan[0,1])
-                          all_single_jones[1][0].append(chan[1,0])
-                          all_single_jones[1][1].append(chan[1,1])
-
+                          if(options.return_amps):
+                              all_single_jones[0][0].append(abs(chan[0,0]))
+                              all_single_jones[0][1].append(abs(chan[0,1]))
+                              all_single_jones[1][0].append(abs(chan[1,0]))
+                              all_single_jones[1][1].append(abs(chan[1,1]))
+                          else:
+                              all_single_jones[0][0].append(chan[0,0])
+                              all_single_jones[0][1].append(chan[0,1])
+                              all_single_jones[1][0].append(chan[1,0])
+                              all_single_jones[1][1].append(chan[1,1])
+                               
         #return all_single_xx, all_single_yy
         return all_single_jones
 
