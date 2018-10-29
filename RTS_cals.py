@@ -1,4 +1,4 @@
-from numpy import cos, sin,array, matrix, inner, conj, real, imag,zeros,arange,shape, sqrt, ones
+from numpy import cos, sin,array, matrix, inner, conj, real, imag,zeros,arange,shape, sqrt, ones, ravel
 from astropy.io import fits
 
 class rts_cal():
@@ -229,6 +229,13 @@ class rts_cal():
             
         return bp_jones_amps
 
+    def all_BP_weights(self,cent_chan=12):
+        all_weights = []
+        for w in self.BP_weights:
+            all_weights.append(w)
+
+        return array(ravel(all_weights))    
+    
     def all_single_jones(self,antenna=0,reverse_bands=False,correct_gain_jump=True,conjugate_jones=True,pol='xx',cent_chan=12,return_amps=False):
         all_single_jones = [[[],[]],[[],[]]]
 #        all_single_xx = []
