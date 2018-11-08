@@ -33,15 +33,18 @@ for f in freq_order:
     #    xx_imag = data[:,0,0,0,:,0,1]
     xx_reals = data[:,0,0,:,0,0]
     xx_imag = data[:,0,0,:,0,1]
+    xx_weights = data[:,0,0,:,0,2]
     xx = xx_reals.astype(complex) + 1.0j*xx_imag
     xx_amps = np.sqrt(xx_reals * xx_reals + xx_imag * xx_imag)
     xx_amps2 = np.sqrt(xx*np.conjugate(xx))
-    ch_avg = np.ravel(np.mean(xx_amps,axis=0))
+    flagged_xx_amps = np.ma.masked_where(xx_weights==0,xx_amps)
+    #    ch_avg = np.ravel(np.mean(xx_amps,axis=0))
+    ch_avg = np.ravel(np.mean(flagged_xx_amps,axis=0))
     all_amps.append(ch_avg)
     fp.close()
 
 all_amps = np.ravel(all_amps)
-
+foo
 outfile = 'foo_amps.txt'
 out_file = open(outfile,'w+')
 for i in all_amps:
