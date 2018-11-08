@@ -19,4 +19,4 @@ do
    obs_array+=(${line})
 done < ${obsid_file}
 #./pipeline_qa_uvfits.py ${obs_array[${SLURM_ARRAY_TASK_ID}-1]} --subdir=low_zenith_avg
-srun --export=ALL --mem=30000 python pipeline_qa_uvfits.py ${obs_array[${SLURM_ARRAY_TASK_ID}-1]} --subdir=${2} --nbands=20
+srun --export=ALL --mem=30000 python /fred/oz048/bpindor/RTS_Python/uvfits_qa/pipeline_qa_uvfits.py ${obs_array[${SLURM_ARRAY_TASK_ID}-1]} --subdir=${2} --nbands=20
