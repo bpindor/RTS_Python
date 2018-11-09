@@ -57,7 +57,7 @@ def pipeline_uvfits_amps(obsid,options):
         xx_amps = np.sqrt(xx_reals * xx_reals + xx_imag * xx_imag)
         xx_amps2 = np.sqrt(xx*np.conjugate(xx))
         flagged_xx_amps = np.ma.masked_where(xx_weights==0,xx_amps)
-        weighted_xx_amps = flagged_xx_amps / np.sqrt(xx_weights / max_weights)
+        weighted_xx_amps = flagged_xx_amps * np.sqrt(xx_weights / max_weight)
         #    ch_avg = np.ravel(np.mean(xx_amps,axis=0))
         #ch_avg = np.ravel(np.mean(flagged_xx_amps,axis=0))
         ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
