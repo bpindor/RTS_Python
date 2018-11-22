@@ -31,6 +31,16 @@ def pipeline_uvfits_amps(obsid,options):
     freqs = []
     bands = []
 
+    if(options.pol == 'xx'):
+        pol_index = 0
+    if(options.pol == 'yy'):
+        pol_index = 1
+    if(options.pol == 'xy'):
+        pol_index = 2
+    if(options.pol == 'yx'):
+        pol_index = 3
+        
+
     for uvfile in uvlist:
         fp = fits.open(uvfile)
         band = uvfile.split('.')[-2][-2:]
@@ -49,9 +59,9 @@ def pipeline_uvfits_amps(obsid,options):
         data = fp[0].data.data
         #    xx_reals = data[:,0,0,0,:,0,0]
         #    xx_imag = data[:,0,0,0,:,0,1]
-        xx_reals = data[:,0,0,:,0,0]
-        xx_imag = data[:,0,0,:,0,1]
-        xx_weights = data[:,0,0,:,0,2]
+        xx_reals = data[:,0,0,:,pol_index,0]
+        xx_imag = data[:,0,0,:,pol_index,1]
+        xx_weights = data[:,0,0,:,pol_index,2]
         max_weight = xx_weights.max()
         xx = xx_reals.astype(complex) + 1.0j*xx_imag
         xx_amps = np.sqrt(xx_reals * xx_reals + xx_imag * xx_imag)
@@ -66,11 +76,13 @@ def pipeline_uvfits_amps(obsid,options):
 
     all_amps = np.ravel(all_amps)
 
-    outfile = '%s_amps.txt' % obsid
+    outfile = '%s_%s_amps.txt' % (obsid,options.pol)
     out_file = open(outfile,'w+')
     for i in all_amps:
         out_file.write('%3.2f ' % i)
     out_file.close()
+
+    return all_amps
     
 
 #plt.clf()
@@ -101,10 +113,13 @@ parser.add_option('--subdir',dest="subdir",type='string',default='',
 parser.add_option('--nbands',dest="nbands",type='int',default='24',
                   help="Number of Coarse Channels Present")
 
+parser.add_option('--pol',dest="pol",type='string',default='xx',
+                   help="Polarisation product to be returned")
+
 (options, args) = parser.parse_args()
 
 obsid = args[0]
 
-pipeline_uvfits_amps(obsid,options)
+all_amps = pipeline_uvfits_amps(obsid,options)
 
 

@@ -10,10 +10,12 @@ colors = ['r','b','g','c','m']
 
 labelled_pointings = []
 
+pol = sys.argv[2]
+
 for line in obslist:
     obsid = line.split()[0]
     pointing = int(line.split()[1])
-    amps_file = '%s_amps.txt' % obsid
+    amps_file = '%s_%s_amps.txt' % (obsid,pol)
     if(os.access(amps_file,os.R_OK)):
         amps = ((open(amps_file)).readline()).split()
         print obsid, (array(amps,dtype=float)[0:len(amps)/2]).max()
@@ -33,4 +35,4 @@ plt.xlabel('Fine Channel Number')
 plt.ylabel('Amps (XX)')
 plt.ylim((0,60.0))
 #plt.legend()
-plt.savefig('all_pointings.png')
+plt.savefig('all_%s_pointings.png' % pol)
