@@ -70,7 +70,10 @@ def pipeline_uvfits_amps(obsid,options):
         weighted_xx_amps = flagged_xx_amps * np.sqrt(xx_weights / max_weight)
         #    ch_avg = np.ravel(np.mean(xx_amps,axis=0))
         #ch_avg = np.ravel(np.mean(flagged_xx_amps,axis=0))
-        ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
+        if(options.return_weights):
+            ch_avg = np.ravel(np.mean(xx_weights,axis=0))
+        else:
+            ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
         all_amps.append(ch_avg)
         fp.close()
 
@@ -115,6 +118,8 @@ parser.add_option('--nbands',dest="nbands",type='int',default='24',
 
 parser.add_option('--pol',dest="pol",type='string',default='xx',
                    help="Polarisation product to be returned")
+
+parser.add_option('--weights',dest='return_weights',action="store_true", default=False)
 
 (options, args) = parser.parse_args()
 
