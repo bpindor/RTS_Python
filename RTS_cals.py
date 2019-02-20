@@ -18,7 +18,7 @@ class rts_cal():
     # Each BP file contains all antennas, so load must occur at top level
 
     def load_BP_jones(self,band,path='./',raw=False,add_flagged=True,chan_bw=0.04):
-        calsfile = path + 'BandpassCalibration_node%03d.dat' % band
+        calsfile = path + '/BandpassCalibration_node%03d.dat' % band
         cals_file = open(calsfile)
 
         present_freqs = ((cals_file.readline()).split(','))
@@ -91,7 +91,7 @@ class rts_cal():
 
         cals_file.close()
 
-    def load_DI_jones(self,band,path='./',filename='DI_JonesMatrices_node'):
+    def load_DI_jones(self,band,path='./',filename='/DI_JonesMatrices_node'):
         calsfile = path + '%s%03d.dat' % (filename,band)
         cals_file = open(calsfile)
         flux_scale = float(cals_file.readline())
