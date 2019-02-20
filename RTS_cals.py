@@ -161,7 +161,7 @@ class rts_cal():
         for i in range(1,n_bands+1):
             self.load_BP_jones(i,path=path,raw=raw,add_flagged=add_flagged)
             
-    def load_all_DI_jones(self,path='./',filename='DI_JonesMatrices_node',n_bands=24):
+    def load_all_DI_jones(self,path='./',filename='/DI_JonesMatrices_node',n_bands=24):
         for i in range(1,n_bands+1):
             self.load_DI_jones(i,path=path,filename=filename)
 
