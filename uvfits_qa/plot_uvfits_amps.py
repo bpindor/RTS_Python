@@ -29,38 +29,29 @@ all_amps = []
 for f in freq_order:
     fp = fits.open(uvlist[f])
     data = fp[0].data.data
-    #    xx_reals = data[:,0,0,0,:,0,0]
-    #    xx_imag = data[:,0,0,0,:,0,1]
-    xx_reals = data[:,0,0,:,0,0]
-    xx_imag = data[:,0,0,:,0,1]
-    xx_weights = data[:,0,0,:,0,2]
+    if(len(data.shape)==6):
+        xx_reals = data[:,0,0,:,0,0]
+        xx_imag = data[:,0,0,:,0,1]
+    else:
+        xx_reals = data[:,0,0,0,:,0,0]
+        xx_imag = data[:,0,0,0,:,0,1]
     xx = xx_reals.astype(complex) + 1.0j*xx_imag
     xx_amps = np.sqrt(xx_reals * xx_reals + xx_imag * xx_imag)
     xx_amps2 = np.sqrt(xx*np.conjugate(xx))
-    flagged_xx_amps = np.ma.masked_where(xx_weights==0,xx_amps)
-    #    ch_avg = np.ravel(np.mean(xx_amps,axis=0))
-    ch_avg = np.ravel(np.mean(flagged_xx_amps,axis=0))
+    ch_avg = np.ravel(np.mean(xx_amps,axis=0))
     all_amps.append(ch_avg)
     fp.close()
 
 all_amps = np.ravel(all_amps)
-foo
-outfile = 'foo_amps.txt'
-out_file = open(outfile,'w+')
-for i in all_amps:
-    out_file.write('%3.2f ' % i)
-out_file.close()
-    
 
 plt.clf()
 plt.plot(all_amps)
-#plt.ylim(max(all_amps) -0.1, max(all_amps) + 0.1)
-plt.ylim(10,40)
+plt.ylim(min(all_amps) -0.1, max(all_amps) + 0.1)
 plt.title(sys.argv[1])
 plt.xlabel('Channel Number')
 plt.ylabel('Amp(XX)')
-#plt.savefig(sys.argv[1] + '.png')
-plt.savefig('uvfits_Amps.png')    
+plt.savefig(sys.argv[1] + '.png')
+    
     
     
 #fp = fits.open(sys.argv[1])

@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 from numpy import max, array
 
 obslist = open(sys.argv[1])
+pol = sys.argv[2]
 
 for line in obslist:
     obsid = line.split()[0]
-    amps_file = '%s_amps.txt' % obsid
+    amps_file = '%s_%s_amps.txt' % (obsid,pol)
     if(os.access(amps_file,os.R_OK)):
         amps = ((open(amps_file)).readline()).split()
         amps_min = array([r for r in amps if float(r) > 0.0],dtype=float).min()
