@@ -191,7 +191,12 @@ class rts_cal():
         
 
 
-    def all_BP_jones(self,antenna=0,reverse_bands=False,cent_chan=12):
+    def all_BP_jones(self,antenna=0,reverse_bands=False,cent_chan=12,pol='xx'):
+        if(pol=='xx'): pol_index=(0,0)
+        if(pol=='xy'): pol_index=(0,1)
+        if(pol=='yx'): pol_index=(1,0)
+        if(pol=='yy'): pol_index=(1,1)
+        
         all_BP_xx = []
         all_BP_yy = []
         a = self.antennas[antenna]
@@ -208,11 +213,11 @@ class rts_cal():
                         #entire band is reversed
                         if(a.BP_jones[self.n_bands -(b+1)] is not None):
                            for chan in (a.BP_jones[self.n_bands -(b+1)]):
-                              all_BP_xx.append(chan[0,0]) 
+                              all_BP_xx.append(chan[pol_index]) 
                     else:
                         if(a.BP_jones[self.n_bands-(band_number-128)] is not None):
                             for chan in (a.BP_jones[self.n_bands-(band_number-128)]):
-                                all_BP_xx.append(chan[0,0])
+                                all_BP_xx.append(chan[pol_index])
 
 
         return all_BP_xx

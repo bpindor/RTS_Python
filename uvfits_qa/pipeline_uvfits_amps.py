@@ -57,8 +57,6 @@ def pipeline_uvfits_amps(obsid,options):
     for f in freq_order:
         fp = fits.open(uvlist[f])
         data = fp[0].data.data
-        #    xx_reals = data[:,0,0,0,:,0,0]
-        #    xx_imag = data[:,0,0,0,:,0,1]
         xx_reals = data[:,0,0,:,pol_index,0]
         xx_imag = data[:,0,0,:,pol_index,1]
         xx_weights = data[:,0,0,:,pol_index,2]
