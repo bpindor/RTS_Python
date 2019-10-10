@@ -9,7 +9,7 @@ from fit_cable_reflections import *
 n_iter=32
 nchan = 32
 n_ants = 128
-n_bands = 20
+n_bands = 24
 
 # This creates a mapping between the rts baselines (which are indexed according to the metafits 'INPUT' value)
 
@@ -37,19 +37,12 @@ obsid = sys.argv[1]
 #meta_file = fits.open(args[1])
 #meta_file = fits.open(sys.argv[2])
 
-gpu_files = glob(mwa_dir+'data/'+obsid+'/*gpubox*.fits')
+gpu_files = glob(mwa_dir+'data/'+obsid+'/*gpubox*00.fits')
 
-metafiles = glob(mwa_dir+'data/'+obsid+'/*meta*fits')
-meta_file = fits.open(metafiles[0])
-cent_chan = meta_file[0].header['CENTCHAN']
-
-
-
-
-rts_inputs = meta_file[1].data['Input']
-cables = meta_file[1].data['Flavors']
 metafiles = glob(mwa_dir+'data/'+obsid+'/*meta*ppds*fits')
 meta_file = fits.open(metafiles[0])
+cent_chan = meta_file[0].header['CENTCHAN']
+rts_inputs = meta_file[1].data['Input']
 cables = meta_file[1].data['Flavors']
 cable_types = set(cables)
 #cable_counts = dict(Counter(cables[::2])) 
@@ -71,7 +64,11 @@ digital_gains = meta_file[2].data['Gains']
 for i,flavor in enumerate(gain_flavors):
     cable2gains[flavor] = digital_gains[i][int(channels[0]):int(channels[0])+n_bands]
 
+# need to consider startime in file name(?)    
+
 gpu_files.sort()
+
+band_numbers = [int((g.split('gpubox')[1])[:2])-1 for g in gpu_files]
 
 #gpu_files.reverse()
 
@@ -79,11 +76,11 @@ gpu_files = gpu_files[:n_bands]
                                                                        
 raw_autos = zeros((n_iter,nchan*len(gpu_files),len(auto_bl)),dtype=float)
 
-# need to consider startime in file name(?)
 
 band_0 = cent_chan - 12
 
-for band,gpubox_file in enumerate(gpu_files):
+#for band,gpubox_file in enumerate(gpu_files):
+for band,gpubox_file in zip(band_numbers,gpu_files):
 
     all_vis = get_raw_vis(gpubox_file,n_iter=n_iter)
 
@@ -97,12 +94,14 @@ for band,gpubox_file in enumerate(gpu_files):
             band_index = n_bands-(band_number-128)
     else:
         band_index = band
-     
+
+    print band,band_index,gpubox_file
+        
     for t in range(n_iter):
         for ch in range(nchan):
             for b in range(len(auto_bl)):
               raw_autos[t,ch+band_index*nchan,b] = all_vis[t][ch][auto2index[b]]  
-              raw_autos[t,ch+band_index*nchan,b] /= pow((float(cable2gains[rts2cables[b]][band_index]) / 64.0),2.0)
+#              raw_autos[t,ch+band_index*nchan,b] /= pow((float(cable2gains[rts2cables[b]][band_index]) / 64.0),2.0)
                 
 mean_autos = np.mean(raw_autos,axis=0)
 std_autos = np.std(raw_autos,axis=0)
