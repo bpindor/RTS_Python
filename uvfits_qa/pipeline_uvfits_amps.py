@@ -62,16 +62,28 @@ def pipeline_uvfits_amps(obsid,options):
         xx_weights = data[:,0,0,:,pol_index,2]
         max_weight = xx_weights.max()
         xx = xx_reals.astype(complex) + 1.0j*xx_imag
-        xx_amps = np.sqrt(xx_reals * xx_reals + xx_imag * xx_imag)
-        xx_amps2 = np.sqrt(xx*np.conjugate(xx))
-        flagged_xx_amps = np.ma.masked_where(xx_weights==0,xx_amps)
-        weighted_xx_amps = flagged_xx_amps * np.sqrt(xx_weights / max_weight)
-        #    ch_avg = np.ravel(np.mean(xx_amps,axis=0))
-        #ch_avg = np.ravel(np.mean(flagged_xx_amps,axis=0))
-        if(options.return_weights):
-            ch_avg = np.ravel(np.mean(xx_weights,axis=0))
+        if(options.avg_then_abs):
+            flagged_xx = np.ma.masked_where(xx_weights==0,xx)
+            weighted_xx = flagged_xx * np.sqrt(xx_weights / max_weight)
+            if(options.return_weights):
+                ch_avg = np.ravel(np.mean(xx_weights,axis=0))
+            else:
+                ch_avg = np.ravel(np.mean(xx,axis=0))
+                ch_avg = abs(ch_avg)
         else:
-            ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
+            xx_amps = np.sqrt(xx_reals * xx_reals + xx_imag * xx_imag)
+            xx_amps2 = np.sqrt(xx*np.conjugate(xx))
+            flagged_xx_amps = np.ma.masked_where(xx_weights==0,xx_amps)
+            weighted_xx_amps = flagged_xx_amps * np.sqrt(xx_weights / max_weight)
+            if(options.return_weights):
+                ch_avg = np.ravel(np.mean(xx_weights,axis=0))
+            else:
+                ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
+
+#        if(options.return_weights):
+#            ch_avg = np.ravel(np.mean(xx_weights,axis=0))
+#        else:
+#            ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
         all_amps.append(ch_avg)
         fp.close()
 
@@ -85,17 +97,6 @@ def pipeline_uvfits_amps(obsid,options):
 
     return all_amps
     
-
-#plt.clf()
-#plt.plot(all_amps)
-#plt.ylim(max(all_amps) -0.1, max(all_amps) + 0.1)
-#plt.ylim(10,40)
-#plt.title(sys.argv[1])
-#plt.xlabel('Channel Number')
-#plt.ylabel('Amp(XX)')
-#plt.savefig(sys.argv[1] + '.png')
-#plt.savefig('uvfits_Amps.png')    
-
 ##########################################
 
 from optparse import OptionParser,OptionGroup
@@ -118,6 +119,8 @@ parser.add_option('--pol',dest="pol",type='string',default='xx',
                    help="Polarisation product to be returned")
 
 parser.add_option('--weights',dest='return_weights',action="store_true", default=False)
+
+parser.add_option('--avg_then_abs',dest='avg_then_abs',action="store_true", default=False)
 
 (options, args) = parser.parse_args()
 

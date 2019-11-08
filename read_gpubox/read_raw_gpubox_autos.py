@@ -114,6 +114,56 @@ for c in cable_types:
                 plt.plot(mean_autos[:,i])
     plt.savefig('%s_%s.png' % (obsid,c))
 
+#In [197]: band_n = 14
+
+#In [198]: band_medians_14 = np.array([np.median(mean_autos[band_n*nchan:(band_n+1)*nchan,i]) for i in rts_ants if flags[i] == 0])
+
+#In [199]: band_n = 15
+
+#In [200]: band_medians_15 = np.array([np.median(mean_autos[band_n*nchan:(band_n+1)*nchan,i]) for i in rts_ants if flags[i] == 0])
+
+#In [201]: band_n = 16
+
+#In [202]: band_medians_16 = np.array([np.median(mean_autos[band_n*nchan:(band_n+1)*nchan,i]) for i in rts_ants if flags[i] == 0])
+
+#In [203]: plt.plot((band_medians_14 + band_medians_15)/2.0, band_medians_15 / band_medians_14,'ro')
+#Out[203]: [<matplotlib.lines.Line2D at 0x7f7f3d538650>]
+
+#In [204]: plt.plot((band_medians_14 + band_medians_15)/2.0, 4.0 * band_medians_15 / band_medians_14,'go')
+#Out[204]: [<matplotlib.lines.Line2D at 0x7f7f35703410>]
+
+#In [205]: plt.plot((band_medians_16 + band_medians_15)/2.0, band_medians_16 / band_medians_15,'bo')
+#Out[205]: [<matplotlib.lines.Line2D at 0x7f7e029f6cd0>]
+
+#In [206]: plt.clf()
+
+#In [207]: plt.plot((band_medians_14 + band_medians_15)/2.0, band_medians_15 / band_medians_14,'ro',label='Before Gain Jump')
+#Out[207]: [<matplotlib.lines.Line2D at 0x7f7e029f63d0>]
+
+#In [208]: plt.plot((band_medians_14 + band_medians_15)/2.0, 4.0 * band_medians_15 / band_medians_14,'go',label='4 x Before Gain Jump')
+#Out[208]: [<matplotlib.lines.Line2D at 0x7f7f42d6b050>]
+
+#In [209]: plt.plot((band_medians_16 + band_medians_15)/2.0, band_medians_16 / band_medians_15,'bo',label='Across Gain Jump')
+
+#In [214]: plt.plot((band_medians_16 + band_medians_15)/2.0, band_medians_16 / band_medians_15,'bo',label='Across Gain Jump')
+
+#In [215]: plt.plot((band_medians_14 + 4.0* band_medians_15)/2.0, 4.0 * band_medians_15 / band_medians_14,'go',label='4 x Before Gain Jump')
+
+
+#In [216]: plt.plot((band_medians_14 + band_medians_15)/2.0, band_medians_15 / band_medians_14,'ro',label='Before Gain Jump')
+
+
+#In [217]: plt.legend(loc=0)
+
+#In [218]: plt.xlabel('Average of Band Medians')
+
+#In [219]: plt.ylabel('Ratio of Band Medians')
+
+
+#In [220]: plt.title('XX Autos Before and After Digital Gain Jump for 1061316296')
+
+#In [221]: plt.savefig('XX_Auto_Ratios_1061316296.png')
+
 
                                                                                    
         
