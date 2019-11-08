@@ -1,0 +1,25 @@
+- generate_sAutoProcess.py 
+Generates a sbatch sAutoProcess script to automatically download and process a set of EOR observations.
+Called by: Top Level
+
+- generate_getGPUBOX_Data.py [text file of obsIDs]
+Takes a list of obsids and generates a script which launches the RTS processing pipeline. Eventually should wrap downloading option via mantra ray client
+Called by: sAutoProcess_Test.sh
+
+- generate_sRTS_auto.py [text file of obsIDs] [basename] [# of subbands] [rts_templates]
+Generates the sbatch scripts for running the RTS over a list of obsids
+Called by: sAutoProcess_Test.sh
+
+- generate_sReflag_mwaf.py [text file of obsIDs]
+Generates sbatch script which reads and reflags the mwaf flag files produced by Cotter.
+Called by: sAutoProcess_Test.sh
+
+- generate_RTS_sourcelists.py [text file of obsIDs] [basename] [# of subbands] [rts_templates]
+Generates the sbatch script which creates RTS patch calibration sourcelists for a list of obsids
+Called by: sAutoProcess_Test.sh
+
+- generate_autoProcess_pipeline_depend.py
+Generates sbatch script with dependancies between various stages of full RTS pipeline
+Called by: sAutoProcess_Test.sh
+
+
