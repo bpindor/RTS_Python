@@ -184,7 +184,7 @@ def generate_ozstar(infile,basename,n_subbands,rts_templates,array,options):
             rts_file.write('mkdir -p %s\n' % basename)
             rts_file.write('cp gpufiles_list.dat %s\n' % basename)
             rts_file.write('cd %s\n' % basename)
-            rts_file.write('generate_RTS_in_mwac.py %s %s %s %s --templates=%s --header=%s %s %s\n' % (data_dir, basename, n_subbands,array,rts_templates,metafits_fullpath,flags_string,tile_flags_string))
+            rts_file.write('generate_RTS_in_auto.py %s %s %s %s --templates=%s --header=%s %s %s\n' % (data_dir, basename, n_subbands,array,rts_templates,metafits_fullpath,flags_string,tile_flags_string))
             if(options.dynamic):
                 rts_file.write('sed -i s,/group/mwaeor/bpindor/pp_selfcal/uniq_300conv_eor0.txt,%s/%s_%s_patch%d.txt,g %s_rts_0.in\n' % (data_dir,sourcelist_basename,obs_id,options.dynamic,basename))
                 #rts_file.write('sed -i s,Replace_name_of_sourcecatalogFile,%s/%s_%s_patch%d.txt,g %s_rts_0.in\n' % (data_dir,sourcelist_basename,obs_id,options.dynamic,basename))
