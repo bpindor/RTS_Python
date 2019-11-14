@@ -119,14 +119,14 @@ def generate_ozstar(infile,basename,n_subbands,rts_templates,array,options):
         rts_file.write('#!/bin/bash -l\n')
         rts_file.write('#SBATCH --job-name=\"RTS\"\n')
         rts_file.write('#SBATCH -o RTS-%A.out\n')
-        rts_file.write('#SBATCH --nodes=%d\n' % (int(n_subbands)/2 + 1))
-        rts_file.write('#SBATCH --ntasks-per-node=2\n')
+        rts_file.write('#SBATCH --nodes=%d\n' % (int(n_subbands)/options.gpus_per_node + 1))
+        rts_file.write('#SBATCH --ntasks-per-node=%d\n' % options.gpus_per_node)
         rts_file.write('#SBATCH --time=00:%d:00\n' % (n_obs * n_templates * options.process_time))
         rts_file.write('#SBATCH --partition=skylake-gpu\n')
         rts_file.write('#SBATCH --account=oz048\n')
         rts_file.write('#SBATCH --export=NONE\n')
         rts_file.write('#SBATCH --mem=5000\n')
-        rts_file.write('#SBATCH --gres=gpu:2\n')
+        rts_file.write('#SBATCH --gres=gpu:%d\n' % options.gpus_per_node)
 #        rts_file.write('#SBATCH --cpus-per-task=2\n')
         
         rts_file.write('cd $SLURM_SUBMIT_DIR\n')
@@ -189,7 +189,7 @@ def generate_ozstar(infile,basename,n_subbands,rts_templates,array,options):
                 rts_file.write('sed -i s,/group/mwaeor/bpindor/pp_selfcal/uniq_300conv_eor0.txt,%s/%s_%s_patch%d.txt,g %s_rts_0.in\n' % (data_dir,sourcelist_basename,obs_id,options.dynamic,basename))
                 #rts_file.write('sed -i s,Replace_name_of_sourcecatalogFile,%s/%s_%s_patch%d.txt,g %s_rts_0.in\n' % (data_dir,sourcelist_basename,obs_id,options.dynamic,basename))
             for line in template_list_file:
-                rts_file.write('srun --export=ALL --mem=5000 --ntasks=%d  --nodes=%d --gres=gpu:2  --ntasks-per-node=2 %s %s_rts_%d.in > srun.${SLURM_JOB_ID}_%d.log\n' % (int(n_subbands) + 1,int(n_subbands)/2 + 1, rts_string,basename,rts_file_index,rts_file_index))
+                rts_file.write('srun --export=ALL --mem=5000 --ntasks=%d  --nodes=%d --gres=gpu:%d  --ntasks-per-node=%d %s %s_rts_%d.in > srun.${SLURM_JOB_ID}_%d.log\n' % (int(n_subbands) + 1,int(n_subbands)/options.gpus_per_node + 1, options.gpus_per_node,options.gpus_per_node, rts_string,basename,rts_file_index,rts_file_index))
                 rts_file_index += 1
             template_list_file.close()
 
@@ -223,6 +223,7 @@ parser.add_option('--tag_uvfits',dest="tag_uvfits",default=False,action='store_t
 parser.add_option('--tag_logs',dest="tag_logs",default=False,action='store_true',
                   help="Tag and copy uvfits to data subdirectory")
 parser.add_option('--process_time',dest="process_time",type='int',default=20,help='Processing time per RTS run per obsid. Default is 20 minutes.')
+parser.add_option('--gpus_per_node',dest="gpus_per_node",type='int',default=1,help='Number of GPUS to use per node')
 
 (options, args) = parser.parse_args()
 
