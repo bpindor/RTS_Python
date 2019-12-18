@@ -11,6 +11,7 @@ parser = OptionParser(usage=usage)
 
 parser.add_option('--n_bands',dest='n_bands',type='int',default=24,help='Number of Coarse Bands Present')
 parser.add_option('--plot_tile',dest='plot_tile',type='int',default=-1,help='Number of RTS Tile to Plot')
+parser.add_option('--limits',dest='plot_limits',type=string
 
 (options, args) = parser.parse_args()
 
@@ -56,5 +57,6 @@ plt.clf()
 plt.plot(np.real(all_single_jones[plot_index][0][0][:]))
 plt.plot(np.imag(all_single_jones[plot_index][0][0][:]))
 plt.title('RTS Tile %d' % plot_index)
+plt.ylim(0.95,1.05)
 plt.savefig('rts_cal.png')
         
