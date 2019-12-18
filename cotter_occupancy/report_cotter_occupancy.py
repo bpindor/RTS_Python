@@ -131,7 +131,7 @@ for mwaf_file in mwaf_list:
 plt.title('Cotter Occupancy %s ' % obsid)    
 plt.subplot2grid((2,1),(1,0))
 plt.ylabel('Percent Flagged')
-plt.plot(100.0 * (np.ravel(all_occupancy)) / float((len(channels) * 8256)))
+plt.plot(100.0 * (np.ravel(all_occupancy)) / float((len(unflagged_indices))))
 plt.savefig('CotterOccupancy_%s.png' % obsid)
 out_file.close()
 
