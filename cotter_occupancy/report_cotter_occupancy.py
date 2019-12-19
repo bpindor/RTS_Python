@@ -72,7 +72,11 @@ for mwaf_file in mwaf_list:
 
     flags=hdulist[1].data['FLAGS']
     n_ants = hdulist[0].header['NANTENNA']
+
+    # sometimes the actual number of scans is less than n_scans
     n_scans = hdulist[0].header['NSCANS']
+    n_baselines = (n_ants * (n_ants + 1)) / 2
+    n_scans = (flags.shape[0]) / n_baselines
 
     print(n_scans)
 
