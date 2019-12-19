@@ -38,8 +38,14 @@ print(data_dir)
 
 if(options.prefix is None):
     prefix = '1'
+    outfile = 'CotterOccupancy_%s.dat' % obsid
+    plotfile = 'CotterOccupancy_%s.png' % obsid
 else:
     prefix = options.prefix + '_1'
+    outfile = options.prefix + '_CotterOccupancy_%s.dat' % obsid
+    plotfile = options.prefix + '_CotterOccupancy_%s.png' % obsid
+
+out_file = open(outfile,'w+')    
 
 mwaf_list = glob.glob(data_dir + '/%s*.mwaf' % prefix)
 
@@ -136,7 +142,7 @@ plt.title('Cotter Occupancy %s ' % obsid)
 plt.subplot2grid((2,1),(1,0))
 plt.ylabel('Percent Flagged')
 plt.plot(100.0 * (np.ravel(all_occupancy)) / float((len(unflagged_indices))))
-plt.savefig('CotterOccupancy_%s.png' % obsid)
+plt.savefig('%s' % plotfile)
 out_file.close()
 
 flags_per_baseline = [np.sum(flags[i::8256,channels]) for i in unflagged_baselines]
