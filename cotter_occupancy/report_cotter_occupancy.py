@@ -23,10 +23,6 @@ obsdir = args[0]
 
 obsid = obsdir.split('/')[0]
 
-outfile = 'CotterOccupancy_%s.dat' % obsid
-
-out_file = open(outfile,'w+')
-
 if options.mwa_dir:
     mwa_dir = options.mwa_dir
 else:
