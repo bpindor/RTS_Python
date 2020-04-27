@@ -149,7 +149,7 @@ def fit_bandpass_and_reflection(bp_data):
             return models_out
 
         else:
-            print 'Bandpass data of unsupported dimensions: %s' % shape(bp_data)
+            print('Bandpass data of unsupported dimensions: %s' % shape(bp_data))
             exit(1)
 
             

@@ -31,7 +31,7 @@ def get_raw_vis(gpufile,n_iter=32):
 
     all_vis = []
 
-    for i in xrange(1,n_iter+1):
+    for i in range(1,n_iter+1):
             vis = gpu_file[i].data
             all_vis.append(vis[:,::2] + vis[:,1::2]*1.0j)
 
