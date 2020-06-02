@@ -16,6 +16,8 @@ parser.add_option('-t','--threshold',dest='threshold',default=0.8,type='float',h
 parser.add_option('-d','--dir',dest='mwa_dir',default='',type='string',help='Base Data Directory')
 parser.add_option('-n','--n_bands',dest='n_bands',default=24,type='int',help='Number of Coarse Bands to Use')
 parser.add_option('-p','--prefix',dest='prefix',default=None,type='string',help='MWAF files prefix string')
+parser.add_option('-v','--verbose',dest='verbose',action='store_true',default=False,help='MWAF files prefix string')
+
 
 (options, args) = parser.parse_args()
 
@@ -41,8 +43,6 @@ else:
     outfile = options.prefix + '_CotterOccupancy_%s.dat' % obsid
     plotfile = options.prefix + '_CotterOccupancy_%s.png' % obsid
 
-out_file = open(outfile,'w+')    
-
 mwaf_list = glob.glob(data_dir + '/%s*.mwaf' % prefix)
 
 # remove flagged channels
@@ -51,7 +51,10 @@ channels = np.delete(channels,14)
 
 if(len(mwaf_list) != 24):
     print('Error: %s had %d mwaf files' % (obsid, len(mwaf_list)))
+    exit(1)
 
+out_file = open(outfile,'w+')    
+    
 unflagged_baselines = None
 unflagged_timesteps = None
 
@@ -64,7 +67,8 @@ all_occupancy = []
 
 for mwaf_file in mwaf_list: 
 
-    print(mwaf_file)
+    if(options.verbose):
+        print(mwaf_file)
     band = (mwaf_file.split('_')[-1])[0:2]
     if(int(band) > options.n_bands):
         continue
@@ -78,14 +82,15 @@ for mwaf_file in mwaf_list:
     # sometimes the actual number of scans is less than n_scans
     n_scans = hdulist[0].header['NSCANS']
     n_baselines = (n_ants * (n_ants + 1)) / 2
-    n_scans = (flags.shape[0]) / n_baselines
+    n_scans = int((flags.shape[0]) / n_baselines)
 
-    print(n_scans)
+    if(options.verbose):
+        print('NSCANS',n_scans)
 
     n_chan = np.shape(flags)[1]
 
-    channels = np.arange(n_chan/16, n_chan - n_chan/16)
-    channels = np.delete(channels,n_chan/2 - n_chan/16)
+    channels = np.arange(n_chan/16, n_chan - n_chan/16,dtype=int)
+    channels = np.delete(channels,int(n_chan/2 - n_chan/16))
 
     if(unflagged_baselines == None):
         unflagged_baselines = [i for i in range(8256) if (np.sum(flags[i::8256,channels])) < 0.9 * float(len(channels) * n_scans)]
@@ -97,7 +102,8 @@ for mwaf_file in mwaf_list:
 
     unflagged_indices = np.ravel(unflagged_indices)
 
-    print(len(unflagged_indices))
+    if(options.verbose):
+        print('Unflagged indices: ',len(unflagged_indices))
 
     # Cant seem to slice on baseline index and channels at the same time
     # So do one after the other
@@ -122,8 +128,7 @@ for mwaf_file in mwaf_list:
 
     for i in range(len(n_ch_flags)):
         out_file.write('%d ' % n_ch_flags[i])
-
-    print('\n')
+    
     out_file.write('\n')
     
 #    occupancy1 = [float(n) / float(n_ch_flags[0]) for n in n_ch_flags[channels] ]
@@ -140,6 +145,10 @@ plt.ylabel('Percent Flagged')
 plt.plot(100.0 * (np.ravel(all_occupancy)) / float((len(unflagged_indices))))
 plt.savefig('%s' % plotfile)
 out_file.close()
+
+percent_file = open('Cotter_percentage_%s.dat' % obsid,'w+')
+print(100.0 * (np.ravel(all_occupancy)) / float((len(unflagged_indices))),file=percent_file)
+percent_file.close()
 
 flags_per_baseline = [np.sum(flags[i::8256,channels]) for i in unflagged_baselines]
 flags_per_timestep = [np.sum(flags[n*8256:(n+1)*8256,channels]) for n in range(n_scans)]
