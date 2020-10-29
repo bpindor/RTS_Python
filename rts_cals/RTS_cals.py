@@ -1,4 +1,5 @@
-from numpy import cos, sin,array, matrix, inner, conj, real, imag,zeros,arange,shape, sqrt, ones, ravel
+import numpy as np
+#from numpy import cos, sin,array, matrix, inner, conj, real, imag,zeros,arange,shape, sqrt, ones, ravel
 from astropy.io import fits
 
 class rts_cal():
@@ -23,7 +24,7 @@ class rts_cal():
 
         present_freqs = ((cals_file.readline()).split(','))
         present_freqs = [int(round(float(p)/chan_bw)) for p in present_freqs]
-        flagged_channels = array([i for i in range(32) if i not in present_freqs])
+        flagged_channels = np.array([i for i in range(32) if i not in present_freqs])
         all_gains = []
 
         all_antennas = []
@@ -31,14 +32,17 @@ class rts_cal():
             gains = line.split(',')
             antenna = int(gains[0])
             all_antennas.append(antenna-1)
-            amp_gains = array(map(float,gains[1::2]))
-            phase_gains = array(map(float,gains[2::2]))
+            f_gains = [float(g) for g in gains]
+            #amp_gains = np.array(map(float,gains[1::2]))
+            #phase_gains = np.array(map(float,gains[2::2]))
+            amp_gains = np.array(f_gains[1::2])
+            phase_gains = np.array(f_gains[2::2])
             # These gains are in (surely) amp-phase, so let's convert to real,imag
 #            r_gains = [float(amp_gains[i]) * cos(float(phase_gains[i])) for i in range(len(amp_gains))]
 #            i_gains = [float(amp_gains[i]) * sin(float(phase_gains[i])) for i in range(len(amp_gains))]
 #            c_gains = [r + 1.0j * i for r,i in zip(r_gains,i_gains)]
-            r_gains = amp_gains * cos(phase_gains)
-            i_gains = amp_gains * sin(phase_gains)
+            r_gains = amp_gains * np.cos(phase_gains)
+            i_gains = amp_gains * np.sin(phase_gains)
             c_gains = r_gains + 1.0j * i_gains
             all_gains.append(c_gains)
 
@@ -64,20 +68,20 @@ class rts_cal():
         # Need to treat separate frequency channels
 
         all_jones = []
-        flagged_jones = matrix([[0,0],[0,0]])
+        flagged_jones = np.matrix([[0,0],[0,0]])
 
         for i in range(len(xx_gains)):
-            jones = [matrix([[xx,xy],[yx,yy]]) for xx,xy,yx,yy in zip(xx_gains[i],xy_gains[i],yx_gains[i],yy_gains[i])]
+            jones = [np.matrix([[xx,xy],[yx,yy]]) for xx,xy,yx,yy in zip(xx_gains[i],xy_gains[i],yx_gains[i],yy_gains[i])]
             self.antennas[antenna_number[i]].BP_jones[band-1] = jones
             if(add_flagged):
                 # Add in flagged channels
                 for ch in range(32):
                     if(ch in flagged_channels):
                         self.antennas[antenna_number[i]].BP_jones[band-1].insert(ch,flagged_jones)    
-                self.BP_weights[band-1] = ones(32)
+                self.BP_weights[band-1] = np.ones(32)
                 self.BP_weights[band-1][flagged_channels] = 0.0
             else:
-                self.BP_weights[band-1] = ones(len(present_channels))
+                self.BP_weights[band-1] = np.ones(len(present_channels))
 
 #                self.antennas[antenna_number[i]].BP_jones[band-1].insert(0,flagged_jones)
 #                self.antennas[antenna_number[i]].BP_jones[band-1].insert(0,flagged_jones)
@@ -99,7 +103,7 @@ class rts_cal():
 
         for line in cals_file:
             xxr, xxi, xyr, xyi, yxr, yxi, yyr, yyi = line.split(',')
-            jones = matrix([[float(xxr) + 1.0j * float(xxi),float(xyr) + 1.0j * float(xyi)],[float(yxr) + 1.0j * float(yxi),float(yyr) + 1.0j * float(yyi)]]) 
+            jones = np.matrix([[float(xxr) + 1.0j * float(xxi),float(xyr) + 1.0j * float(xyi)],[float(yxr) + 1.0j * float(yxi),float(yyr) + 1.0j * float(yyi)]]) 
             all_jones.append(jones)
 
         cals_file.close()
@@ -134,15 +138,15 @@ class rts_cal():
                     band_index = self.n_bands-(band_number-128)
             else:
                 band_index = b
-            ant.DI_jones_ref[band_index] = array([[1.0, 0.0],[0.0, 1.0]])
-            ant.DI_jones[band_index] = array([[1.0, 0.0],[0.0, 1.0]])
+            ant.DI_jones_ref[band_index] = np.array([[1.0, 0.0],[0.0, 1.0]])
+            ant.DI_jones[band_index] = np.array([[1.0, 0.0],[0.0, 1.0]])
             ant.BP_jones[band_index] = [None] * n_chan
             for ch_n,ch in enumerate(ant.BP_jones[band_index]):
                 ch_cals = [[[],[]],[[],[]]]
                 for pol1 in [0,1]:
                     for pol2 in [0,1]:
                         ch_cals[pol1][pol2] = single_jones[pol1][pol2][total_ch]
-                ant.BP_jones[band_index][ch_n] = array(ch_cals)
+                ant.BP_jones[band_index][ch_n] = np.array(ch_cals)
                 total_ch += 1
 
     def average_BP_jones(self):
@@ -177,7 +181,7 @@ class rts_cal():
         fine_chan = meta_file[0].header['FINECHAN']
         freqcent = meta_file[0].header['FREQCENT']
 
-        freqs = (fine_chan * 1e3) * arange(nchans)
+        freqs = (fine_chan * 1e3) * np.arange(nchans)
         self.freqs = freqs + freqcent * 1e6 - (freqs[nchans/2] + freqs[nchans/2 -1]) / 2.0 - (fine_chan * 1e3) / 2.0 
         meta_file.close()
  
@@ -239,7 +243,7 @@ class rts_cal():
         for w in self.BP_weights:
             all_weights.append(w)
 
-        return array(ravel(all_weights))    
+        return np.array(np.ravel(all_weights))    
     
     def all_single_jones(self,antenna=0,reverse_bands=False,correct_gain_jump=True,conjugate_jones=True,pol='xx',cent_chan=12,return_amps=False):
         all_single_jones = [[[],[]],[[],[]]]
@@ -313,7 +317,7 @@ class rts_cal():
     def write_UCLA_cal(self,filename=None,reverse_bands=True):
 
         if(self.metafile is None):
-            print "Error: Use load_metadata to define metafits file"
+            print("Error: Use load_metadata to define metafits file")
         else:    
             meta_file = fits.open(self.metafile)
         antenna_n = meta_file[1].data['Antenna']
@@ -351,9 +355,9 @@ class rts_cal():
                                single_jones = self.antennas[ant2rts[k]].Single_jones[i][j]
                            else:
                                flag = 1
-                               single_jones = zeros((2,2))
+                               single_jones = np.zeros((2,2))
                                
-                           out_file.write("%s %s %6.3f %s %.5f %f %f %d\n" % (ant2tile[k],k,self.freqs[i_n*n_chan+ j]/1.0e6,pols[p1][p2],self.mjd,real(single_jones[p1,p2]),imag(single_jones[p1,p2]),flag))
+                           out_file.write("%s %s %6.3f %s %.5f %f %f %d\n" % (ant2tile[k],k,self.freqs[i_n*n_chan+ j]/1.0e6,pols[p1][p2],self.mjd,np.real(single_jones[p1,p2]),np.imag(single_jones[p1,p2]),flag))
 
 #                for i in range(self.n_ants):
 #                    if(ant2rts[i] not in self.flagged_antennas):
@@ -388,20 +392,24 @@ class rts_antenna():
         for idx,[B,DI] in enumerate(zip(self.BP_jones,self.DI_jones)):
             if(B is not None):
                 self.Single_jones[idx] = [DI * bp for bp in B]
-                self.Single_jones[idx] = [s * (matrix(self.DI_jones_ref[idx])).I for s in self.Single_jones[idx]]
+                self.Single_jones[idx] = [s * (np.matrix(self.DI_jones_ref[idx])).I for s in self.Single_jones[idx]]
 
-def write_BP_files(raw_cal,fit_cal,filename='test'):
+def write_BP_files(raw_cal,fit_cal,filename='test',is_80khz=False):
     from cmath import phase
     n_bands = 24
     n_tiles = 128
-    flagged_channels = [0,1,16,30,31]
-    bp_freqs = "0.080000, 0.120000, 0.160000, 0.200000, 0.240000, 0.280000, 0.320000, 0.360000, 0.400000, 0.440000, 0.480000, 0.520000, 0.560000, 0.600000, 0.680000, 0.720000, 0.760000, 0.800000, 0.840000, 0.880000, 0.920000, 0.960000, 1.000000, 1.040000, 1.080000, 1.120000, 1.160000\n"
+    if(is_80khz):
+        flagged_channels = [0,15]
+        bp_freqs = "0.080000, 0.160000, 0.240000, 0.320000, 0.400000, 0.480000, 0.560000, 0.640000, 0.720000, 0.800000, 0.880000, 0.960000, 1.040000, 1.120000\n"
+    else:
+        flagged_channels = [0,1,16,30,31]
+        bp_freqs = "0.080000, 0.120000, 0.160000, 0.200000, 0.240000, 0.280000, 0.320000, 0.360000, 0.400000, 0.440000, 0.480000, 0.520000, 0.560000, 0.600000, 0.680000, 0.720000, 0.760000, 0.800000, 0.840000, 0.880000, 0.920000, 0.960000, 1.000000, 1.040000, 1.080000, 1.120000, 1.160000\n"
     for n in range(raw_cal.n_bands):
         band_file = 'Bandpass_' + filename + '%03d.dat' % (n+1)
         fp = open(band_file,'w+')
         fp.write(bp_freqs)
         for i in range(n_tiles):
-            if(raw_cal.antennas[i] is not None):
+            if(raw_cal.antennas[i] is not None and i not in raw_cal.flagged_antennas):
                 if(raw_cal.antennas[i].BP_jones[n] is not None):
                     for pol1 in [0,1]:
                         for pol2 in [0,1]:
@@ -426,13 +434,13 @@ def write_DI_files(rts_cal,filename='test'):
        fp = open(band_file,'w+')
        fp.write("1.0\n")
        #       fp.write("%s" % inv0_entry)
-       fp.write('%7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f\n' % (real(rts_cal.antennas[0].DI_jones_ref[n][0,0]), imag(rts_cal.antennas[0].DI_jones_ref[n][0,0]),real(rts_cal.antennas[0].DI_jones_ref[n][0,1]), imag(rts_cal.antennas[0].DI_jones_ref[n][0,1]),real(rts_cal.antennas[0].DI_jones_ref[n][1,0]), imag(rts_cal.antennas[0].DI_jones_ref[n][1,0]),real(rts_cal.antennas[0].DI_jones_ref[n][1,1]), imag(rts_cal.antennas[0].DI_jones[n][1,1])))   
+       fp.write('%7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f\n' % (np.real(rts_cal.antennas[0].DI_jones_ref[n][0,0]), np.imag(rts_cal.antennas[0].DI_jones_ref[n][0,0]),np.real(rts_cal.antennas[0].DI_jones_ref[n][0,1]), np.imag(rts_cal.antennas[0].DI_jones_ref[n][0,1]),np.real(rts_cal.antennas[0].DI_jones_ref[n][1,0]), np.imag(rts_cal.antennas[0].DI_jones_ref[n][1,0]),np.real(rts_cal.antennas[0].DI_jones_ref[n][1,1]), np.imag(rts_cal.antennas[0].DI_jones[n][1,1])))   
        
-       for a in rts_cal.antennas:
-           if(a.DI_jones[n] is None):
+       for i,a in enumerate(rts_cal.antennas):
+           if(a.DI_jones[n] is None or i in rts_cal.flagged_antennas):
              fp.write("+0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0\n") 
            else:
-               fp.write('%7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f\n' % (real(a.DI_jones[n][0,0]), imag(a.DI_jones[n][0,0]),real(a.DI_jones[n][0,1]), imag(a.DI_jones[n][0,1]),real(a.DI_jones[n][1,0]), imag(a.DI_jones[n][1,0]),real(a.DI_jones[n][1,1]), imag(a.DI_jones[n][1,1])))   
+               fp.write('%7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f, %7.6f\n' % (np.real(a.DI_jones[n][0,0]), np.imag(a.DI_jones[n][0,0]),np.real(a.DI_jones[n][0,1]), np.imag(a.DI_jones[n][0,1]),np.real(a.DI_jones[n][1,0]), np.imag(a.DI_jones[n][1,0]),np.real(a.DI_jones[n][1,1]), np.imag(a.DI_jones[n][1,1])))   
     
 
                 

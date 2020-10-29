@@ -16,10 +16,10 @@ rawantennas2rawbl = dict(zip(bl_pairs,range(len(bl_pairs))))
 #floor(index/4) + index%4*16 = antenna
 
 raw_ants2rts_ants = [] 
-for i in range(n_ants/2):
+for i in range(int(n_ants/2)):
     raw_ants2rts_ants.append(int(floor(i/4)) + (i%4) * 16)
-for i in range(n_ants/2,n_ants):
-    raw_ants2rts_ants.append(raw_ants2rts_ants[i-n_ants/2] + 64)
+for i in range(int(n_ants/2),n_ants):
+    raw_ants2rts_ants.append(raw_ants2rts_ants[i-int(n_ants/2)] + 64)
 
 rts_ants2raw_ants = dict(zip(raw_ants2rts_ants,range(n_ants)))
 
@@ -65,23 +65,23 @@ def raw2rts(raw_bl):
     # 00 10 11 20 21 22 ...
 
     raw_ants = rawbl2rawantennas[raw_bl]
-    print raw_ants, raw_ants2rts_ants[raw_ants[0]],raw_ants2rts_ants[raw_ants[1]]
+    print(raw_ants, raw_ants2rts_ants[raw_ants[0]],raw_ants2rts_ants[raw_ants[1]])
     rts_ants = (raw_ants2rts_ants[raw_ants[0]],raw_ants2rts_ants[raw_ants[1]])
-    print rts_ants
+    print(rts_ants)
     rts_baseline = rtsants2rtsbl(rts_ants[0],rts_ants[1])
-    print rts_baseline
+    print(rts_baseline)
     return rts_baseline
     
     
 def rts2raw(rts_bl):
 
-    print rts_bl
+    print(rts_bl)
     rts_ants = rtsbl2rtsantennas[rts_bl]
-    print rts_ants
+    print(rts_ants)
     raw_ants = (rts_ants2raw_ants[rts_ants[1]],rts_ants2raw_ants[rts_ants[0]])
-    print raw_ants
+    print(raw_ants)
     raw_bl = rawantennas2rawbl[raw_ants]
-    print raw_bl
+    print(raw_bl)
     return raw_bl
                      
 def loadCotterMapping(metafile):
@@ -128,7 +128,7 @@ def raw2tiles(raw_bl):
     rts_bl = raw2rts(raw_bl)
     rts_ants = rtsbl2rtsantennas[rts_bl]
     tiles = (rts2tile[rts_ants[0]],rts2tile[rts_ants[1]])
-    print tiles
+    print(tiles)
     return tiles
 
 def tile2rts(ant):

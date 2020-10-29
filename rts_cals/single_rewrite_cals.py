@@ -47,10 +47,10 @@ RTS_cals.write_DI_files(copy_cal,filename='copy_test')
 
 for i in range(n_bands):
     cmd = 'cp Bandpass_copy_test%03d.dat BandpassCalibration_node%03d.dat' % (i+1, i+1)
-    print cmd
+    print(cmd)
     os.system(cmd)
     cmd = 'cp DI_Jones_copy_test%03d.dat DI_JonesMatrices_node%03d.dat' % (i+1, i+1)
-    print cmd
+    print(cmd)
     os.system(cmd)
 
 #copy2_cal = RTS_cals.rts_cal()
