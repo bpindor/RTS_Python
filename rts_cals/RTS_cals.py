@@ -394,16 +394,28 @@ class rts_antenna():
                 self.Single_jones[idx] = [DI * bp for bp in B]
                 self.Single_jones[idx] = [s * (np.matrix(self.DI_jones_ref[idx])).I for s in self.Single_jones[idx]]
 
-def write_BP_files(raw_cal,fit_cal,filename='test',is_80khz=False):
+def write_BP_files(raw_cal,fit_cal,filename='test',is_80khz=False,flagged_channels=[0,1,16,30,31]):
     from cmath import phase
     n_bands = 24
     n_tiles = 128
     if(is_80khz):
-        flagged_channels = [0,15]
-        bp_freqs = "0.080000, 0.160000, 0.240000, 0.320000, 0.400000, 0.480000, 0.560000, 0.640000, 0.720000, 0.800000, 0.880000, 0.960000, 1.040000, 1.120000\n"
+        n_chan = 16
+        ch_width = 0.08
     else:
-        flagged_channels = [0,1,16,30,31]
-        bp_freqs = "0.080000, 0.120000, 0.160000, 0.200000, 0.240000, 0.280000, 0.320000, 0.360000, 0.400000, 0.440000, 0.480000, 0.520000, 0.560000, 0.600000, 0.680000, 0.720000, 0.760000, 0.800000, 0.840000, 0.880000, 0.920000, 0.960000, 1.000000, 1.040000, 1.080000, 1.120000, 1.160000\n"
+        n_chan = 32
+        ch_width = 0.04
+    bp_freqs = ""
+    first_ch = True
+    for ch in range(n_chan):
+        if(ch not in flagged_channels):
+            if(first_ch):
+                bp_freqs = bp_freqs + "%7.6f" % (ch * ch_width)
+                first_ch = False
+            else:
+                bp_freqs = bp_freqs + ", %7.6f" % (ch * ch_width)
+                
+    bp_freqs = bp_freqs + "\n"
+        
     for n in range(raw_cal.n_bands):
         band_file = 'Bandpass' + filename + '%03d.dat' % (n+1)
         fp = open(band_file,'w+')
