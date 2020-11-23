@@ -405,7 +405,7 @@ def write_BP_files(raw_cal,fit_cal,filename='test',is_80khz=False):
         flagged_channels = [0,1,16,30,31]
         bp_freqs = "0.080000, 0.120000, 0.160000, 0.200000, 0.240000, 0.280000, 0.320000, 0.360000, 0.400000, 0.440000, 0.480000, 0.520000, 0.560000, 0.600000, 0.680000, 0.720000, 0.760000, 0.800000, 0.840000, 0.880000, 0.920000, 0.960000, 1.000000, 1.040000, 1.080000, 1.120000, 1.160000\n"
     for n in range(raw_cal.n_bands):
-        band_file = 'Bandpass_' + filename + '%03d.dat' % (n+1)
+        band_file = 'Bandpass' + filename + '%03d.dat' % (n+1)
         fp = open(band_file,'w+')
         fp.write(bp_freqs)
         for i in range(n_tiles):
@@ -430,7 +430,7 @@ def write_DI_files(rts_cal,filename='test'):
     #n_bands = 24
     inv0_entry = "+1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0\n"
     for n in range(rts_cal.n_bands):
-       band_file = 'DI_Jones_' + filename + '%03d.dat' % (n+1)
+       band_file = 'DI_Jones' + filename + '%03d.dat' % (n+1)
        fp = open(band_file,'w+')
        fp.write("1.0\n")
        #       fp.write("%s" % inv0_entry)
