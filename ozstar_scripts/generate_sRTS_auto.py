@@ -125,7 +125,7 @@ def generate_ozstar(infile,basename,n_subbands,rts_templates,array,options):
         rts_file.write('#SBATCH --partition=skylake-gpu\n')
         rts_file.write('#SBATCH --account=oz048\n')
         rts_file.write('#SBATCH --export=NONE\n')
-        rts_file.write('#SBATCH --mem=5000\n')
+        rts_file.write('#SBATCH --mem=%d\n' % options.mem)
         rts_file.write('#SBATCH --gres=gpu:%d\n' % options.gpus_per_node)
 #        rts_file.write('#SBATCH --cpus-per-task=2\n')
         
@@ -156,6 +156,7 @@ def generate_ozstar(infile,basename,n_subbands,rts_templates,array,options):
             
         if options.dev_rts:
             rts_string = '/fred/oz048/bpindor/mwa-RTS/bin/rts_gpu'
+            #rts_string = '/fred/oz048/bpindor/RTS_alt/bin/rts_gpu'
         else:
             rts_string= '/fred/oz048/MWA/CODE/mwa-RTS/bin/rts_gpu'
 
@@ -189,7 +190,7 @@ def generate_ozstar(infile,basename,n_subbands,rts_templates,array,options):
                 rts_file.write('sed -i s,/group/mwaeor/bpindor/pp_selfcal/uniq_300conv_eor0.txt,%s/%s_%s_patch%d.txt,g %s_rts_0.in\n' % (data_dir,sourcelist_basename,obs_id,options.dynamic,basename))
                 #rts_file.write('sed -i s,Replace_name_of_sourcecatalogFile,%s/%s_%s_patch%d.txt,g %s_rts_0.in\n' % (data_dir,sourcelist_basename,obs_id,options.dynamic,basename))
             for line in template_list_file:
-                rts_file.write('srun --export=ALL --mem=5000 --ntasks=%d  --nodes=%d --gres=gpu:%d  --ntasks-per-node=%d %s %s_rts_%d.in > srun.${SLURM_JOB_ID}_%d.log\n' % (int(n_subbands) + 1,int(n_subbands)/options.gpus_per_node + 1, options.gpus_per_node,options.gpus_per_node, rts_string,basename,rts_file_index,rts_file_index))
+                rts_file.write('srun --export=ALL --mem=%d --ntasks=%d  --nodes=%d --gres=gpu:%d  --ntasks-per-node=%d %s %s_rts_%d.in > srun.${SLURM_JOB_ID}_%d.log\n' % (options.mem, int(n_subbands) + 1,int(n_subbands)/options.gpus_per_node + 1, options.gpus_per_node,options.gpus_per_node, rts_string,basename,rts_file_index,rts_file_index))
                 rts_file_index += 1
             template_list_file.close()
 
@@ -224,6 +225,7 @@ parser.add_option('--tag_logs',dest="tag_logs",default=False,action='store_true'
                   help="Tag and copy uvfits to data subdirectory")
 parser.add_option('--process_time',dest="process_time",type='int',default=20,help='Processing time per RTS run per obsid. Default is 20 minutes.')
 parser.add_option('--gpus_per_node',dest="gpus_per_node",type='int',default=1,help='Number of GPUS to use per node')
+parser.add_option('--mem',dest="mem",type='int',default=5000,help='RAM requested for RTS per node. In MB. Default 5000.')
 
 (options, args) = parser.parse_args()
 

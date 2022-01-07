@@ -175,6 +175,10 @@ parser.add_option('--subdir',dest="subdir",type='string',default='',
                   help="Data subdirector where RTS will be run and outputs stored")
 parser.add_option('--nbands',dest="nbands",type='int',default='24',
                   help="Number of Coarse Channels Present")
+parser.add_option('--ntimesteps',dest="ntimestep",type='int',default='14',
+                  help="Number of (8s) Timesteps")
+
+
 
 (options, args) = parser.parse_args()
 
