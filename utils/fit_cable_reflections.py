@@ -146,7 +146,7 @@ def fit_polynomial_bandpass(bp_data,n_bands=24,order=3):
                     
                     models_out[x][y] = p_real(xvals) + 1.0j*p_imag(xvals) 
 
-            return models_out
+            return np.array(models_out)
 
         else:
             print('Bandpass data of unsupported dimensions: %s' % np.shape(bp_data))

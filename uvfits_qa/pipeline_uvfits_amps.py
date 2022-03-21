@@ -47,7 +47,7 @@ def pipeline_uvfits_amps(obsid,options):
         freq = fp[0].header['CRVAL4']
         freqs.append(freq)
         bands.append(band)
-        print uvfile, freq, band
+        print(uvfile, freq, band)
         fp.close()
 
     freq_order = np.argsort(freqs)
@@ -57,9 +57,16 @@ def pipeline_uvfits_amps(obsid,options):
     for f in freq_order:
         fp = fits.open(uvlist[f])
         data = fp[0].data.data
-        xx_reals = data[:,0,0,:,pol_index,0]
-        xx_imag = data[:,0,0,:,pol_index,1]
-        xx_weights = data[:,0,0,:,pol_index,2]
+        print(np.shape(data))
+        print(len(np.shape(data)))
+        if(len(np.shape(data))==7):
+             xx_reals = data[:,0,0,0,:,pol_index,0]
+             xx_imag = data[:,0,0,0,:,pol_index,1]
+             xx_weights = data[:,0,0,0,:,pol_index,2]
+        else:
+            xx_reals = data[:,0,0,:,pol_index,0]
+            xx_imag = data[:,0,0,:,pol_index,1]
+            xx_weights = data[:,0,0,:,pol_index,2]
         max_weight = xx_weights.max()
         xx = xx_reals.astype(complex) + 1.0j*xx_imag
         if(options.avg_then_abs):
@@ -74,7 +81,8 @@ def pipeline_uvfits_amps(obsid,options):
             xx_amps = np.sqrt(xx_reals * xx_reals + xx_imag * xx_imag)
             xx_amps2 = np.sqrt(xx*np.conjugate(xx))
             flagged_xx_amps = np.ma.masked_where(xx_weights==0,xx_amps)
-            weighted_xx_amps = flagged_xx_amps * np.sqrt(xx_weights / max_weight)
+            #weighted_xx_amps = flagged_xx_amps * np.sqrt(xx_weights / max_weight)
+            weighted_xx_amps = xx_amps
             if(options.return_weights):
                 ch_avg = np.ravel(np.mean(xx_weights,axis=0))
             else:

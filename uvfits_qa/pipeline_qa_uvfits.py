@@ -56,17 +56,17 @@ def pipeline_qa_uvfits(obsid,options):
         else:
             infile = uvfits_dir + ('%s_%02d' % (options.tagname,band_order[band]+1)) + '.uvfits'
 
-        print infile
+        print(infile)
 
         fp = fits.open(infile)
 
         n_groups = fp[0].header['GCOUNT']
         n_ant = fp[1].header['NAXIS2']
         n_chan = fp[0].header['NAXIS4']
-        n_baselines = n_ant * (n_ant - 1) / 2
+        n_baselines = int(n_ant * (n_ant - 1) / 2)
 # This should be an option or better still somehow calculated from metadata
         n_time = 14 # Number of (8s) timesteps
-        n_diffs = n_time / 2 # How many differences can we form
+        n_diffs = int(n_time) / 2 # How many differences can we form
 
         xx_reals = []
         xx_imag = []
@@ -90,7 +90,7 @@ def pipeline_qa_uvfits(obsid,options):
                 
         # Maybe this differencing could be done by reading two sets of data?
 
-        for i in range(n_diffs):
+        for i in range(int(n_diffs)):
             if(i==0):
                 xxr_diffs = xx_reals[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - xx_reals[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]
                 xxi_diffs = xx_imag[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - xx_imag[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]
