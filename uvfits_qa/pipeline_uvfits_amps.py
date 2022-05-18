@@ -17,12 +17,12 @@ def pipeline_uvfits_amps(obsid,options):
         if(options.subdir is None):
             uvfits_dir = mwa_dir + 'data/' + obs_num + '/'
         else:
-            uvfits_dir = mwa_dir + 'data/' + obs_num + '/%s/' % options.subdir 
+            uvfits_dir = mwa_dir + 'data/' + obs_num + '/%s/' % options.subdir
     else:
         uvfits_dir = mwa_dir + 'data/' + obs_num + '/uvfits/'
-    
+
     data_dir=mwa_dir+ 'data/'
-    
+
 
     uvlist = glob.glob(uvfits_dir + '*.uvfits')
 
@@ -39,7 +39,7 @@ def pipeline_uvfits_amps(obsid,options):
         pol_index = 2
     if(options.pol == 'yx'):
         pol_index = 3
-        
+
 
     for uvfile in uvlist:
         fp = fits.open(uvfile)
@@ -86,12 +86,12 @@ def pipeline_uvfits_amps(obsid,options):
             if(options.return_weights):
                 ch_avg = np.ravel(np.mean(xx_weights,axis=0))
             else:
-                ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
+                ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0))
 
 #        if(options.return_weights):
 #            ch_avg = np.ravel(np.mean(xx_weights,axis=0))
 #        else:
-#            ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
+#            ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0))
         all_amps.append(ch_avg)
         fp.close()
 
@@ -104,7 +104,7 @@ def pipeline_uvfits_amps(obsid,options):
     out_file.close()
 
     return all_amps
-    
+
 ##########################################
 
 from optparse import OptionParser,OptionGroup
@@ -135,5 +135,3 @@ parser.add_option('--avg_then_abs',dest='avg_then_abs',action="store_true", defa
 obsid = args[0]
 
 all_amps = pipeline_uvfits_amps(obsid,options)
-
-

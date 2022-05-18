@@ -20,10 +20,10 @@ for line in obslist:
             plot_min = rms_min
         if(rms_max > plot_max):
             plot_max = rms_max
-        print obsid, (array(rms,dtype=float)[0:len(rms)/2]).max(),rms_min
+        #print(obsid, (array(rms,dtype=float)[0:len(rms)/2]).max(),rms_min)
         plt.plot(array([float(r) for r in rms]))
     else:
-        print 'Cannot open file %s' % rms_file
+        print('Cannot open file %s' % rms_file)
 
 #for e in edges:
 #    plt.axvline(e)

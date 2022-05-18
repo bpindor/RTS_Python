@@ -22,18 +22,21 @@ mwa_dir = os.getenv('MWA_DIR','/scratch/astronomy556/MWA/')
 grid_files = {}
 grid_list = []
 #file_list = []
+out_file = open('all_pointings.txt','w+')
 
 for line in in_file:
     obsid = (line.split())[0]
     data_dir = mwa_dir + 'data/' + obsid
-    metafile = (glob.glob(data_dir + '/*.metafits'))[0]
+    metafile = (glob.glob(data_dir + '/*meta*fits'))[0]
     meta_file = fits.open(metafile)
     gridnum = int((meta_file[0].header)['GRIDNUM'])
     if (gridnum not in grid_list):
         grid_list.append(gridnum)
         grid_files[gridnum] = open('pointing_%d.dat' % gridnum,'w+')
     grid_files[gridnum].write('%s\n' % obsid)
-    print (meta_file[0].header)['GRIDNUM']
-    
+    out_file.write('%s %d\n' % (obsid, gridnum))
+    #print (meta_file[0].header)['GRIDNUM']
+
+out_file.close()                  
 for num in grid_files.keys():
     grid_files[num].close()
