@@ -162,7 +162,17 @@ def generate_ozstar(infile,basename,n_subbands,rts_templates,options):
         out_file.write('while read line\ndo\n   obs_array+=(${line})\ndone < ${obsid_file}\n')
         out_file.write('cd %sdata/${obs_array[${SLURM_ARRAY_TASK_ID}-1]} \n' % (mwa_dir))
         metafile = '%sdata/${obs_array[${SLURM_ARRAY_TASK_ID}-1]}/${obs_array[${SLURM_ARRAY_TASK_ID}-1]}_metafits_ppds.fits' % mwa_dir
-        out_file.write('srun --export=ALL --mem=5000 python ${MWA_DIR}/CODE/srclists/srclist_by_beam.py -m %s -n %d -s ${MWA_DIR}/CODE/srclists/%s\n' % (metafile,options.dynamic,options.sourcelist))
+         # Check if target sourcelist exists
+        srclist_head = (options.sourcelist).split('.')[0]
+        
+        out_file.write('srclist_file=%sdata/${obs_array[${SLURM_ARRAY_TASK_ID}-1]}/%s_${obs_array[${SLURM_ARRAY_TASK_ID}-1]}_patch%d.txt \n' % (mwa_dir,srclist_head,options.dynamic))
+        out_file.write('if [ -f \"$srclist_file\" ]; then\n')
+        out_file.write('    echo \"$srclist_file exists\"\n')
+        out_file.write('else \n')
+        out_file.write('    srun --export=ALL --mem=5000 python ${MWA_DIR}/CODE/srclists/srclist_by_beam.py -m %s -n %d -s ${MWA_DIR}/CODE/srclists/%s %s\n' % (metafile,options.dynamic,options.sourcelist,options.extra_srclist_options))
+        out_file.write('fi\n')
+        
+        #out_file.write('srun --export=ALL --mem=5000 python ${MWA_DIR}/CODE/srclists/srclist_by_beam.py -m %s -n %d -s ${MWA_DIR}/CODE/srclists/%s %s\n' % (metafile,options.dynamic,options.sourcelist,options.extra_srclist_options))
 
     out_file.close()
 
@@ -197,6 +207,8 @@ parser.add_option('--tag_uvfits',dest="tag_uvfits",default=False,action='store_t
 parser.add_option('--tag_logs',dest="tag_logs",default=False,action='store_true',
                   help="Tag and copy uvfits to data subdirectory")
 parser.add_option('--process_time',dest="process_time",type='int',default=0,help='Processing time per RTS run per obsid. Default is 20 minutes.')
+parser.add_option('--extra_options',dest='extra_srclist_options',type='string',default='',help='Additional options to be passed to srclist_by_beam')
+
 
 (options, args) = parser.parse_args()
 

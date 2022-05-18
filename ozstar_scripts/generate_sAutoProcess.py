@@ -259,11 +259,19 @@ def generate_ozstar(options):
     else:
         process_string = ''
 
+        
+    mem_string = '--mem=%d' % options.mem
+
     if(options.rts_only):
         rts_only_string = '--rts_only'
     else:
         rts_only_string = ''   
 
+    if(options.extra_srclist_options):
+        extra_srclist_options='--extra_options=\'%s\'' % options.extra_srclist_options
+    else:
+        extra_srclist_options = ''
+        
     # run sbatch script
         
     autofile = 'sAutoProcess_%s.sh' % options.label 
@@ -276,11 +284,11 @@ def generate_ozstar(options):
         
         auto_file.write('generate_getGPUBOX_Data.py %s/obslist_temp_%d.dat --chunk_number=%d \n' % (cwd,i,i))
 #        auto_file.write('generate_getNGASData.py %s/obslist_temp_%d.dat %s %s --chunk_number=%d %s\n' % (cwd, i, options.tagname, options.templatefile,i,rts_only_string))
-        auto_file.write('generate_sRTS_auto.py %s/obslist_temp_%d.dat %s %d %s --auto --chunk_number=%d %s %s %s %s %s %s %s %s %s\n' % (cwd,i, options.tagname, options.n_bands,options.templatefile, i,do_erase,flags_string,dynamic_string,tile_flags_string,dev_rts_string,tag_uvfits_string,tag_logs_string,sourcelist_string,process_string))
+        auto_file.write('generate_sRTS_auto.py %s/obslist_temp_%d.dat %s %d %s --auto --chunk_number=%d %s %s %s %s %s %s %s %s %s %s\n' % (cwd,i, options.tagname, options.n_bands,options.templatefile, i,do_erase,flags_string,dynamic_string,tile_flags_string,dev_rts_string,tag_uvfits_string,tag_logs_string,sourcelist_string,process_string,mem_string))
 #        auto_file.write('generate_mwac_qRTS_auto.py %s/obslist_temp_%d.dat %s %d %s --auto --chunk_number=%d %s %s %s %s %s %s %s %s %s\n' % (cwd,i, options.tagname, options.n_bands,options.templatefile, i,do_erase,flags_string,dynamic_string,tile_flags_string,dev_rts_string,tag_uvfits_string,tag_logs_string,sourcelist_string,process_string))
         auto_file.write('generate_sReflag_mwaf.py %s/obslist_temp_%d.dat \n' % (cwd,i))
         auto_file.write('mv sReflag_mwaf_files.sh sReflag_mwaf_files_%d.sh \n' % i)
-        auto_file.write('generate_RTS_sourcelists.py %s/obslist_temp_%d.dat %s %d %s --auto --chunk_number=%d %s %s %s %s %s %s %s %s %s\n'  % (cwd, i, options.tagname, options.n_bands,options.templatefile,i,do_erase,flags_string,dynamic_string,tile_flags_string,dev_rts_string,tag_uvfits_string,tag_logs_string,sourcelist_string,process_string)) 
+        auto_file.write('generate_RTS_sourcelists.py %s/obslist_temp_%d.dat %s %d %s --auto --chunk_number=%d %s %s %s %s %s %s %s %s %s %s\n'  % (cwd, i, options.tagname, options.n_bands,options.templatefile,i,do_erase,flags_string,dynamic_string,tile_flags_string,dev_rts_string,tag_uvfits_string,tag_logs_string,sourcelist_string,process_string,extra_srclist_options)) 
         #        auto_file.write('generate_RTS_pipeline_setup.py %s/obslist_temp_%d.dat %s %d %s --auto --chunk_number=%d %s %s %s %s %s %s %s %s %s\n'  % (cwd, i, options.tagname, options.n_bands,options.templatefile,i,do_erase,flags_string,dynamic_string,tile_flags_string,dev_rts_string,tag_uvfits_string,tag_logs_string,sourcelist_string,process_string)) 
 
 #        if(i==n_chunks-1):
@@ -357,11 +365,13 @@ parser.add_option('--tag_logs',dest="tag_logs",default=False,action='store_true'
 parser.add_option('--reflag_mwaf',dest="reflag_mwaf",default=False,action='store_true',
                   help="Run reflagging to identify fine channels with large flagged fraction in Cotter mwaf files")
 parser.add_option('--process_time',dest="process_time",type='int',default=0,help='Processing time per RTS run per obsid. Default is 20 minutes.')
+parser.add_option('--mem',dest="mem",type='int',default=5000,help='RAM requested for RTS per node. In MB. Default 5000.')
 parser.add_option('--band',dest='band',type='int',default=-1,help='EOR band for running CHIPS [0=low band, 1 = high band]')
 parser.add_option('--nofilter_for_chips',dest='nofilter_for_chips',action='store_true',default=False,help='Run CHIPS over all the obsdis without qa_check')
 parser.add_option('--email',dest='email_addr',default=None,help='Send notification email when jobs are completed/stopped')
 parser.add_option('--rts_only',dest="rts_only",default=False,action='store_true',help="Skip downloading and RTS setup steps")
 parser.add_option('--n_bands',dest='n_bands',type='int',default=24,help='Number of Coarse Bands')
+parser.add_option('--extra_srclist_options',dest='extra_srclist_options',type='string',default='',help='Additional options to be passed to srclist_by_beam')
 
 (options, args) = parser.parse_args()
 

@@ -49,7 +49,7 @@ mwaf_list = glob.glob(data_dir + '/%s*.mwaf' % prefix)
 channels = np.arange(2,30)
 channels = np.delete(channels,14)
 
-if(len(mwaf_list) != 24):
+if(len(mwaf_list) < options.n_bands):
     print('Error: %s had %d mwaf files' % (obsid, len(mwaf_list)))
     exit(1)
 

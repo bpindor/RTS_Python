@@ -17,12 +17,12 @@ def pipeline_uvfits_amps(obsid,options):
         if(options.subdir is None):
             uvfits_dir = mwa_dir + 'data/' + obs_num + '/'
         else:
-            uvfits_dir = mwa_dir + 'data/' + obs_num + '/%s/' % options.subdir 
+            uvfits_dir = mwa_dir + 'data/' + obs_num + '/%s/' % options.subdir
     else:
         uvfits_dir = mwa_dir + 'data/' + obs_num + '/uvfits/'
-    
+
     data_dir=mwa_dir+ 'data/'
-    
+
 
     uvlist = glob.glob(uvfits_dir + '*uvdump*.uvfits')
 
@@ -39,7 +39,7 @@ def pipeline_uvfits_amps(obsid,options):
         pol_index = 2
     if(options.pol == 'yx'):
         pol_index = 3
-        
+
 
     for uvfile in uvlist:
         fp = fits.open(uvfile)
@@ -57,9 +57,16 @@ def pipeline_uvfits_amps(obsid,options):
     for f in freq_order:
         fp = fits.open(uvlist[f])
         data = fp[0].data.data
-        xx_reals = data[:,0,0,:,pol_index,0]
-        xx_imag = data[:,0,0,:,pol_index,1]
-        xx_weights = data[:,0,0,:,pol_index,2]
+        print(np.shape(data))
+        print(len(np.shape(data)))
+        if(len(np.shape(data))==7):
+             xx_reals = data[:,0,0,0,:,pol_index,0]
+             xx_imag = data[:,0,0,0,:,pol_index,1]
+             xx_weights = data[:,0,0,0,:,pol_index,2]
+        else:
+            xx_reals = data[:,0,0,:,pol_index,0]
+            xx_imag = data[:,0,0,:,pol_index,1]
+            xx_weights = data[:,0,0,:,pol_index,2]
         max_weight = xx_weights.max()
         xx = xx_reals.astype(complex) + 1.0j*xx_imag
         if(options.avg_then_abs):
@@ -74,16 +81,17 @@ def pipeline_uvfits_amps(obsid,options):
             xx_amps = np.sqrt(xx_reals * xx_reals + xx_imag * xx_imag)
             xx_amps2 = np.sqrt(xx*np.conjugate(xx))
             flagged_xx_amps = np.ma.masked_where(xx_weights==0,xx_amps)
-            weighted_xx_amps = flagged_xx_amps * np.sqrt(xx_weights / max_weight)
+            #weighted_xx_amps = flagged_xx_amps * np.sqrt(xx_weights / max_weight)
+            weighted_xx_amps = xx_amps
             if(options.return_weights):
                 ch_avg = np.ravel(np.mean(xx_weights,axis=0))
             else:
-                ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
+                ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0))
 
 #        if(options.return_weights):
 #            ch_avg = np.ravel(np.mean(xx_weights,axis=0))
 #        else:
-#            ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0)) 
+#            ch_avg = np.ravel(np.mean(weighted_xx_amps,axis=0))
         all_amps.append(ch_avg)
         fp.close()
 
@@ -96,7 +104,7 @@ def pipeline_uvfits_amps(obsid,options):
     out_file.close()
 
     return all_amps
-    
+
 ##########################################
 
 from optparse import OptionParser,OptionGroup
@@ -127,5 +135,3 @@ parser.add_option('--avg_then_abs',dest='avg_then_abs',action="store_true", defa
 obsid = args[0]
 
 all_amps = pipeline_uvfits_amps(obsid,options)
-
-

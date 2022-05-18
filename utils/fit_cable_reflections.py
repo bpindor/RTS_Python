@@ -132,6 +132,25 @@ def fit_polynomial_bandpass(bp_data,n_bands=24,order=3,clip_width=0):
         return p_real(xvals), p_imag(xvals)
     
     else:
+        if(len(np.shape(bp_data)) == 3 and np.shape(bp_data)[1] == 2 and np.shape(bp_data)[2] == 2):
+            xvals = np.arange(np.shape(bp_data)[0])
+            models_out = np.zeros_like(bp_data)
+            for x in range(2):
+                for y in range(2):
+                    clipped, clipped_x = clip_edge_channels(bp_data[:,x,y],clip_width=0,n_bands=n_bands)
+                    z_real = np.polyfit(clipped_x,np.real(clipped),order)
+                    z_imag = np.polyfit(clipped_x,np.imag(clipped),order)
+
+                    p_real = np.poly1d(z_real)
+                    p_imag = np.poly1d(z_imag)   
+                    
+                    models_out[:,x,y] = p_real(xvals) + 1.0j*p_imag(xvals) 
+
+            return np.array(models_out)
+        else:
+            print('Bandpass data of unsupported dimensions: %s' % np.shape(bp_data))
+            exit(1)
+        """
         if(len(np.shape(bp_data)) == 3 and np.shape(bp_data)[0] == 2 and np.shape(bp_data)[1] == 2):
             xvals = np.arange(np.shape(bp_data)[2])
             models_out = [[[],[]],[[],[]]]
@@ -146,12 +165,12 @@ def fit_polynomial_bandpass(bp_data,n_bands=24,order=3,clip_width=0):
                     
                     models_out[x][y] = p_real(xvals) + 1.0j*p_imag(xvals) 
 
-            return models_out
-
+            return np.array(models_out)
+       
         else:
             print('Bandpass data of unsupported dimensions: %s' % np.shape(bp_data))
             exit(1)
-
+        """
             
 def fit_auto_bandpass(data):
 

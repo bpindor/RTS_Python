@@ -16,14 +16,14 @@ n_bands = 24
 corr_mapping = fill_mapping_matrix()
 the_matrix = extract_full_matrix()
 rts2index = load_rts_baselines(corr_mapping,the_matrix)
-rts_baselines = range(n_ants * (n_ants - 1) / 2)
+rts_baselines = np.arange(n_ants * (n_ants - 1) / 2)
 raw_baselines = [rts2index[i] for i in rts_baselines]
 auto2index = load_auto_baselines(corr_mapping,the_matrix)
 
 auto_bl = []
 
 
-for i in xrange(128):
+for i in np.arange(128):
     if(i==0):
         auto_bl.append(i)
     else:
@@ -95,7 +95,7 @@ for band,gpubox_file in zip(band_numbers,gpu_files):
     else:
         band_index = band
 
-    print band,band_index,gpubox_file
+    print (band,band_index,gpubox_file)
         
     for t in range(n_iter):
         for ch in range(nchan):

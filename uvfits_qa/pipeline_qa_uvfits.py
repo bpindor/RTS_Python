@@ -22,10 +22,10 @@ def pipeline_qa_uvfits(obsid,options):
         if(options.subdir is None):
             uvfits_dir = mwa_dir + 'data/' + obs_num + '/'
         else:
-            uvfits_dir = mwa_dir + 'data/' + obs_num + '/%s/' % options.subdir 
+            uvfits_dir = mwa_dir + 'data/' + obs_num + '/%s/' % options.subdir
     else:
         uvfits_dir = mwa_dir + 'data/' + obs_num + '/uvfits/'
-    
+
     data_dir=mwa_dir+ 'data/'
 
     n_bands = options.nbands
@@ -44,11 +44,11 @@ def pipeline_qa_uvfits(obsid,options):
         fp = fits.open(infile)
 
         freq_list.append(fp[0].header['CRVAL4'])
-    
+
         fp.close()
 
-    band_order = argsort(freq_list)   
-    
+    band_order = argsort(freq_list)
+
     for band in range(n_bands):
 
         if(options.tagname is None):
@@ -87,7 +87,7 @@ def pipeline_qa_uvfits(obsid,options):
         yy_reals = ravel(yy_reals)
         yy_imag = ravel(yy_imag)
         weights = ravel(weights)
-                
+
         # Maybe this differencing could be done by reading two sets of data?
 
         for i in range(int(n_diffs)):
@@ -95,14 +95,14 @@ def pipeline_qa_uvfits(obsid,options):
                 xxr_diffs = xx_reals[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - xx_reals[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]
                 xxi_diffs = xx_imag[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - xx_imag[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]
                 yyr_diffs = yy_reals[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - yy_reals[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]
-                yyi_diffs = yy_imag[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - yy_imag[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan] 
+                yyi_diffs = yy_imag[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - yy_imag[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]
                 weights_list = sqrt(weights[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] * weights[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan])
             else:
                 xxr_diffs = concatenate((xxr_diffs,xx_reals[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - xx_reals[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]))
-                xxi_diffs = concatenate((xxi_diffs,xx_imag[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - xx_imag[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]))                        
+                xxi_diffs = concatenate((xxi_diffs,xx_imag[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - xx_imag[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]))
                 yyr_diffs = concatenate((yyr_diffs,yy_reals[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - yy_reals[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]))
-                yyi_diffs = concatenate((yyi_diffs,yy_imag[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - yy_imag[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]))                        
-                weights_list = concatenate((weights_list,sqrt(weights[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] * weights[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]))) 
+                yyi_diffs = concatenate((yyi_diffs,yy_imag[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] - yy_imag[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan]))
+                weights_list = concatenate((weights_list,sqrt(weights[i*2*n_baselines*n_chan:(i*2+1)*n_baselines*n_chan] * weights[(i*2+1)*n_baselines*n_chan:(i*2+2)*n_baselines*n_chan])))
 
         # Array now contain visibility differences, just need to calculate variances
 
@@ -110,8 +110,8 @@ def pipeline_qa_uvfits(obsid,options):
         ixx = xxi_diffs
         ryy = yyr_diffs
         iyy = yyi_diffs
-        
-        
+
+
         r_weights = ravel(weights_list)
         max_weight = r_weights.max()
         nz_weights = where(r_weights > 0)
@@ -132,7 +132,7 @@ def pipeline_qa_uvfits(obsid,options):
                 #weighted_xxr = xxr_ch[nz_weights]
                 weighted_xxr = xxr_ch[nz_weights] / sqrt(max_weight / weights_ch[nz_weights])
                 ch_sigmas.append(std(weighted_xxr))
-                
+
 #        sigmas.append([std(weighted_xxr),std(weighted_xxi),std(weighted_yyr),std(weighted_yyi)])
 
         fp.close()
@@ -145,8 +145,8 @@ def pipeline_qa_uvfits(obsid,options):
 
 
     for i in range(len(ch_sigmas)):
-       out_file.write('%3.2f ' % ch_sigmas[i]) 
-    
+       out_file.write('%3.2f ' % ch_sigmas[i])
+
 #    for i in range(n_coarse):
 #        out_file.write('%3.2f ' % sigmas[i,0])
 
@@ -155,8 +155,8 @@ def pipeline_qa_uvfits(obsid,options):
 
 
 
-        
-    
+
+
 
 
 
@@ -175,6 +175,10 @@ parser.add_option('--subdir',dest="subdir",type='string',default='',
                   help="Data subdirector where RTS will be run and outputs stored")
 parser.add_option('--nbands',dest="nbands",type='int',default='24',
                   help="Number of Coarse Channels Present")
+parser.add_option('--ntimesteps',dest="ntimestep",type='int',default='14',
+                  help="Number of (8s) Timesteps")
+
+
 
 (options, args) = parser.parse_args()
 

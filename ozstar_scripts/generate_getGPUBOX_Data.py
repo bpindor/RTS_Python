@@ -19,11 +19,12 @@ def generate_ozstar(infile,options):
     out_file.write('#SBATCH --time=00:%d:00\n' % (n_obs * 5))
     out_file.write('#SBATCH --account=oz048\n')
     out_file.write('#SBATCH --partition=skylake\n')
+    out_file.write('#SBATCH --mem=10000\n')
     out_file.write('#SBATCH --export=NONE\n')
 
     
     if (options.no_gpubox == False):
-        out_file.write('srun --export=ALL list_gpubox_files.py %s\n' % infile)
+        out_file.write('srun --mem=10000 --export=ALL list_gpubox_files.py %s\n' % infile)
         out_file.write('./autoProcess_pipeline_%d.sh\n' % options.chunk_number)
 
     out_file.close()
