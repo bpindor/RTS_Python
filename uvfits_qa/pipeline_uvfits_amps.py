@@ -24,7 +24,7 @@ def pipeline_uvfits_amps(obsid,options):
     data_dir=mwa_dir+ 'data/'
     
 
-    uvlist = glob.glob(uvfits_dir + '*.uvfits')
+    uvlist = glob.glob(uvfits_dir + '*uvdump*.uvfits')
 
     # sort by physical frequency
 
@@ -47,7 +47,7 @@ def pipeline_uvfits_amps(obsid,options):
         freq = fp[0].header['CRVAL4']
         freqs.append(freq)
         bands.append(band)
-        print uvfile, freq, band
+        print(uvfile, freq, band)
         fp.close()
 
     freq_order = np.argsort(freqs)

@@ -115,13 +115,13 @@ def fit_reflection(data):
 
     return model_points, model_vals
 
-def fit_polynomial_bandpass(bp_data,n_bands=24,order=3):
+def fit_polynomial_bandpass(bp_data,n_bands=24,order=3,clip_width=0):
 
     if(len(np.shape(bp_data)) == 1):
 
         xvals = np.arange(len(bp_data))
         
-        clipped, clipped_x = clip_edge_channels(bp_data,clip_width=0,n_bands=n_bands)
+        clipped, clipped_x = clip_edge_channels(bp_data,clip_width=clip_width,n_bands=n_bands)
     
         z_real = np.polyfit(clipped_x,np.real(clipped),order)
         z_imag = np.polyfit(clipped_x,np.imag(clipped),order)
